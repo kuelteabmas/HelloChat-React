@@ -5,7 +5,7 @@ class SendMessageForm extends React.Component {
         return (
             <form className="send-message-form">
                 <input
-                    placeholder="SendMessageForm"
+                    placeholder="Type your message here and press Enter"
                     type="text" />
             </form>
         )
