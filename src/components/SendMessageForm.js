@@ -11,16 +11,17 @@ class SendMessageForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    handleChange(e) {
+    handleChange(event) {
         this.setState({
-            message: e.target.value
+            message: event.target.value
         })
     }
 
-    
-    handleSubmit(e) {
-        e.preventDefault()
-        this.props.sendMessage(this.state.message)
+    handleSubmit(event) {
+        event.preventDefault()
+        this.props.sendMessage(this.state.message)    
+        
+        // To clear text input field
         this.setState({
             message: ''
         })

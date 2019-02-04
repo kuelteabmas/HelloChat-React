@@ -4,28 +4,28 @@ import SendMessageForm from '../src/components/SendMessageForm'
 import RoomList from '../src/components/RoomList'
 import NewRoomForm from '../src/components/NewRoomForm'
 
-import { tokenUrl, instanceLocator } from './config'
+import { tokenUrl, instanceLocator, userId, roomId } from './config'
 import { ChatManager, TokenProvider} from '@pusher/chatkit-client'
-// import { tokenUrl, instanceLocator, userId, roomId } from './config'
-// import { TokenProvider, ChatManager } from '@pusher/chatkit-client'
+
 
 class App extends React.Component {
     constructor() {
         super()
         this.state = {
-            messages: []
+            messages: [],
+            joinedRooms: [],
+            joinableRooms: [],
+            roomId: null
         }
-        // this.sendMessage = this.sendMessage.bind(this)
+        this.sendMessage = this.sendMessage.bind(this)
+        this.getRooms = this.getRooms.bind(this)
+        this.subscribeToRoom = this.subscribeToRoom.bind(this)
     }
-
     componentDidMount() {
         const chatManager = new ChatManager({
-            // instanceLocator: 'v1:us1:b233b9b8-4fcc-4968-9683-4907a8cf705c',
-            instanceLocator: instanceLocator,
-            // key: '4103a0c6-5716-4449-a12f-600448df93af:SU/RXVYbAaR5KLXzRI9yj5XGmtiQtoS09CR1aoVRyCo=',
-            userId: 'devP',
+            instanceLocator,
+            userId,
             tokenProvider: new TokenProvider({
-                // url: 'https://us1.pusherplatform.io/services/chatkit_token_provider/v1/b233b9b8-4fcc-4968-9683-4907a8cf705c/token'
                 url: tokenUrl
             }),
             // logger: {
@@ -39,47 +39,74 @@ class App extends React.Component {
 
         chatManager.connect()
         .then(currentUser => {
-            console.log('Successful connection', currentUser)
+            console.log('Successful connection with user', currentUser)
             this.currentUser = currentUser
-            currentUser.subscribeToRoom({
-                // roomId: 'General',
-                roomId: '19528602',
-                
-                hooks: {
-                    onNewMessage: message => {
-                        console.log('message.text: ', message.text)
-                        console.log(`Received new message ${message.text}`)
-                        this.setState({
-                            messages: [...this.state.messages, message]
+            this.getRooms()
+            this.subscribeToRoom()
+        })
+        .catch(error => {
+            console.log('Error on connection', error)
+        })
 
-                        })     
-                        
-                    }
+    }
+
+    // Subscribe To A Room method: When user clicks on a room, it is automatically joined to that room
+    subscribeToRoom(roomId) {
+        // Clear message list before joining a room
+        this.setState({
+            messages: []
+        }) 
+        this.currentUser.subscribeToRoom({
+            roomId: roomId,
+            hooks: {
+                onMessage: message => {
+                    console.log(`Received new message: ${message.text}`)
+                    this.setState({
+                        messages: [...this.state.messages, message]
+                    })     
+                    
                 }
+            }
+        })
+        // add selected joinableRoom to joinedRoom list
+        .then(room => {
+            this.getRooms()
+            this.setState({
+                roomId: room.id
             })
         })
-        .catch(err => {
-            console.log('Error on connection', err)
+        .catch(error => console.log("Error on subscribing to room: ", error))
+    }
+
+    // Joinable Room Method
+    getRooms() {
+        this.currentUser.getJoinableRooms()
+        .then(joinableRooms => {
+            this.setState({
+                joinableRooms,
+                joinedRooms: this.currentUser.rooms
+            })
+            .catch(error => console.log('Error on joinableRooms: ', error))
         })
     }
 
-    // sendMessage(text) {
-    //    this.currentUser.sendMessage({
-    //        text: text,
-    //     //    roomId: 'General',
-    //        roomId: '19528602'
-    //    })
-    // }
+    // Send Message method
+    sendMessage(text) {
+       this.currentUser.sendMessage({
+           text,
+           roomId: this.state.roomId
+       })
+    }
 
     render() {
 
-        console.log('this.state.messages: ', this.state.messages)
-
         return (
             <div className="app">
-                <RoomList />
+                <RoomList 
+                    subscribeToRoom={this.subscribeToRoom}
+                    rooms={[...this.state.joinableRooms, ...this.state.joinedRooms]} />
                 <MessageList messages={this.state.messages} />
-                <SendMessageForm />
+                <SendMessageForm sendMessage={this.sendMessage} />
                 <NewRoomForm />
             </div>
         );
