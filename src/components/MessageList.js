@@ -1,53 +1,41 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import Message from './Message'
 
-// const DUMMY_DATA = [
-//     {
-//         senderId: 'perborgen',
-//         text: 'Hey, how is it going?'
-//     },
-//     {
-//         senderId: 'janedoe',
-//         text: 'Great! How about you?'
-//     },
-//     {
-//         senderId: 'perborgen',
-//         text: 'Good to hear! I am great as well'
-//     }
-// ]
-
-// // Dummy Data class
-// class MessageList extends React.Component {
-//     render() {
-//         return (
-//             <div className="message-list">
-//                 {DUMMY_DATA.map((message, index) => {
-//                     return (
-//                         <div>
-//                             <div>{message.senderId}</div>
-//                             <div>{message.text}</div>
-//                         </div>
-//                     )
-//                 })}
-//             </div>
-
-//         )
-//     }
-// }
-
-
-// Live Data from Chat API
 
 class MessageList extends React.Component {
+    componentWillUpdate() {
+        // this will check our location in the messagelist
+        const node = ReactDOM.findDOMNode(this)
+        this.shouldScrollToBottom = node.scrollTop + node.clientHeight + 100 >= node.scrollHeight
+    }
+
+    componentDidUpdate() {
+        if (this.shouldScrollToBottom) {
+            const node = ReactDOM.findDOMNode(this)
+            node.scrollTop = node.scrollHeight
+        }
+    }
+
     render() {
+        if (!this.props.roomId) {
+            return (
+                <div className="message-list">
+                    <div className="join-room">
+                        &larr; Join a room!
+                    </div>
+                </div>
+            )
+        }
+        
         return (
             <div className="message-list">
                 {this.props.messages.map((message, index) => {
                     return (
-                        <Message 
-                        key={index}
-                        username={message.senderId}
-                        text={message.text}
+                        <Message
+                            key={index}
+                            // username={message.senderId}
+                            text={message.text}
                         />
                     )
                 })}

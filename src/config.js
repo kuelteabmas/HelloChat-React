@@ -5,11 +5,4 @@ const userId = "devP"
 
 const roomId = '19528602'
 
-// exports.userName = userName
-// exports.roomId = roomId
-// exports.tokenUrl = tokenUrl
-// exports.instanceLocator = instanceLocator
-
-// export { tokenUrl, instanceLocator, userId, roomId }
-
 export { tokenUrl, instanceLocator, userId, roomId}

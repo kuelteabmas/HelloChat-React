@@ -1,9 +1,12 @@
 :root {
-  --main-color: #5ea3d0;
+  --main-color: #7e544a;
   --secondary-color: white;
   --main-text-color: #3e5869;
   --secondary-text-color: #b0c7d6;
   --send-message-form: #F5F5F5;
+}
+
+.root {
 }
 
 html, body {
@@ -17,6 +20,8 @@ html, body {
 
 #root {
   height: 100%;
+  font-family: 'Courier New', Courier, monospace
+
 }
 
 .app {
@@ -58,7 +63,13 @@ html, body {
   height: 100%;
 }
 
-.rooms-list > ul {
+/* .rooms-list > ul {
+  list-style-type: none;    
+  padding: 0;
+  overflow: scoll;
+} */
+
+.rooms-list ul {
   list-style-type: none;    
   padding: 0;
   overflow: scoll;
@@ -66,6 +77,7 @@ html, body {
 
 .rooms-list li {
   margin: 10px 0;
+  
 }
 
 .rooms-list > h3 {
@@ -80,9 +92,14 @@ html, body {
   
 }
 
-.rooms-list .room.active a {
+/* .rooms-list .room.active a {
   color: var(--secondary-color);
+} */
+
+.active-room a {
+  color: blue;
 }
+
 
 .new-room-form {
   padding: 0 5px;

@@ -20,6 +20,7 @@ class App extends React.Component {
         this.sendMessage = this.sendMessage.bind(this)
         this.getRooms = this.getRooms.bind(this)
         this.subscribeToRoom = this.subscribeToRoom.bind(this)
+        this.createRoom = this.createRoom.bind(this)
     }
     componentDidMount() {
         const chatManager = new ChatManager({
@@ -28,13 +29,7 @@ class App extends React.Component {
             tokenProvider: new TokenProvider({
                 url: tokenUrl
             }),
-            // logger: {
-            //     verbose: console.log,
-            //     debug: console.log,
-            //     info: console.log,
-            //     warn: console.log,
-            //     error: console.log
-            //   }
+
         })
 
         chatManager.connect()
@@ -98,16 +93,28 @@ class App extends React.Component {
        })
     }
 
+    // Create Room method
+    createRoom(name) {
+        this.currentUser.createRoom({
+            name
+        })
+        .then(room => this.subscribeToRoom(room.id))
+        .catch(error => console.log('Error with createRoom: ', error))
+    }
     render() {
-
         return (
             <div className="app">
                 <RoomList 
+                    roomId={this.state.roomId}
                     subscribeToRoom={this.subscribeToRoom}
                     rooms={[...this.state.joinableRooms, ...this.state.joinedRooms]} />
-                <MessageList messages={this.state.messages} />
-                <SendMessageForm sendMessage={this.sendMessage} />
-                <NewRoomForm />
+                <MessageList 
+                    roomId={this.state.roomId}
+                    messages={this.state.messages} />
+                <SendMessageForm 
+                    disabled={!this.state.roomId}
+                    sendMessage={this.sendMessage} />
+                <NewRoomForm createRoom={this.createRoom} />
             </div>
         );
     }

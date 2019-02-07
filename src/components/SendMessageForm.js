@@ -21,7 +21,7 @@ class SendMessageForm extends React.Component {
         event.preventDefault()
         this.props.sendMessage(this.state.message)    
         
-        // To clear text input field
+        // Clear text input field
         this.setState({
             message: ''
         })
@@ -33,6 +33,7 @@ class SendMessageForm extends React.Component {
                 onSubmit={this.handleSubmit}
                 className="send-message-form">
                     <input
+                    disabled={this.props.disabled}
                     onChange={this.handleChange}
                         placeholder="Type your message here and press Enter"
                         type="text"
